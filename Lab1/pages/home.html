@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>Home Page</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .half {
+      background: linear-gradient(135deg, #74b9ff, #a29bfe);
+      width: 50%;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    .left {
+      border-right: 2px solid #ccc;
+    }
+
+    h2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+      color: white;
+      background-color: cadetblue;
+      border: none;
+      font-size: 18px;
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="half left">
+    <h2>Databases <button onclick="goToAddDB()">+</button></h2>
+    <table id="dbTable">
+      <thead>
+        <tr>
+          <th colspan="2">Database Name</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="half right">
+    <h2>Users <button onclick="goToAddUser()">+</button></h2>
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Database</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+async function loadDatabases() {
+  const res = await fetch('http://localhost:3000/api/databases');
+  const data = await res.json();
+  const tbody = document.querySelector('#dbTable tbody');
+  tbody.innerHTML = '';
+  data.forEach(db => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${db}</td>
+      <td><button onclick="goToAddTable('${db}')">Add Table</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function goToAddTable(database) {
+  window.location.href = `addTable.html?db=${encodeURIComponent(database)}`;
+}
+
+    async function loadUsers() {
+      const res = await fetch('http://localhost:3000/api/all-users');
+      const data = await res.json();
+      const tbody = document.querySelector('#userTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${u.username}</td><td>${u.email}</td><td>${u.database}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function goToAddDB() {
+      window.location.href = 'addDB.html';
+    }
+
+    function goToAddUser() {
+      window.location.href = 'addUser.html';
+    }
+
+    loadDatabases();
+    loadUsers();
+  </script>
+</body>
+</html>
